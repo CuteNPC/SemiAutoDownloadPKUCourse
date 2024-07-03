@@ -57,7 +57,7 @@ class Task():
         self.m3u8: str = response.text
         self.m3u8_lines = self.m3u8.split("\n")
         self.segments = [
-            line for line in self.m3u8_lines if (not line.startswith("#")) and (not len(line) == 0)]
+            line for line in self.m3u8_lines if (not line.startswith("#")) and len(line) > 0]
         self.key_url = self.m3u8_lines[5][31:-1]
         response = ColdTimeGet.run(
             url=self.key_url, headers=self.headers)
@@ -145,6 +145,7 @@ class Main():
         with open(file_path, "r", encoding="UTF-8") as fp:
             lines = fp.readlines()
         lines = [line.strip() for line in lines]
+        lines = [line for line in lines if len(line) > 0]
         return lines
 
     def get_args(self):
