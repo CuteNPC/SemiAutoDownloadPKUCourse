@@ -1,0 +1,7 @@
+{
+  "headers": "headers.txt",
+  "cookie": "cookie.txt",
+  "cache": "cache",
+  "output": "output",
+  "course": "course.txt"
+}
