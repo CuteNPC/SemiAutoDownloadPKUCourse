@@ -8,10 +8,13 @@ by CuteNPC
 ```
 git clone https://github.com/CuteNPC/SemiAutoDownloadPKUCourse.git
 ```
+
 2. Install `requests` and `tqdm` in your Python environment:
 ```
 pip install requests tqdm
 ```
+
+3. Install `ffmpeg` and config the `PATH`, Run `ffmpeg -version` to verify the installation.
 
 ### Usage
 
