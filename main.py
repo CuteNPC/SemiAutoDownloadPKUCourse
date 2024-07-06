@@ -1,32 +1,11 @@
 import os
-import requests as req
+import requests
 from typing import Dict, List
 import json
 import sys
-import time
 from tqdm import tqdm
 import subprocess
 import shutil
-
-
-class ColdTimeGet:
-
-    tm = time.time()
-    cd = 0
-
-    @staticmethod
-    def run(*args, **kwds):
-        cd = max(0, ColdTimeGet.cd)
-        rm = ColdTimeGet.tm + cd - time.time()
-        if rm > 0:
-            time.sleep(rm)
-        result = req.get(*args, **kwds)
-        ColdTimeGet.tm = time.time()
-        return result
-
-    @staticmethod
-    def setColdTime(t: float):
-        ColdTimeGet.cd = t
 
 
 class Task():
@@ -49,7 +28,7 @@ class Task():
     def get_m3u8_and_key(self):
         if self.failed:
             return
-        response = ColdTimeGet.run(
+        response = requests.get(
             url=self.url_prefix + self.m3u8_file, headers=self.headers)
         if not response.ok:
             self.failed = True
@@ -59,11 +38,12 @@ class Task():
         self.segments = [
             line for line in self.m3u8_lines if (not line.startswith("#")) and len(line) > 0]
         self.key_url = self.m3u8_lines[5][31:-1]
-        response = ColdTimeGet.run(
+        response = requests.get(
             url=self.key_url, headers=self.headers)
         if not response.ok:
             self.failed = True
-            return
+            print("Can't download key, may be error token?")
+            exit(0)
         self.key: str = response.text
         self.m3u8_lines[5] = '#EXT-X-KEY:METHOD=AES-128,URI=\"keyfile.key\"'
         self.m3u8 = '\n'.join(self.m3u8_lines)
@@ -79,7 +59,7 @@ class Task():
                 fp.write(self.key)
             print(f"Downloading {self.output_filename}")
             for id, segment in enumerate(tqdm(self.segments)):
-                response = ColdTimeGet.run(
+                response = requests.get(
                     url=self.url_prefix + segment, headers=self.headers)
                 if not response.ok:
                     raise ConnectionError
