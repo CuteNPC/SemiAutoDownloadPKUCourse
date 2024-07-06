@@ -113,7 +113,8 @@ class Main():
         os.makedirs(self.cache, exist_ok=True)
         os.makedirs(self.output, exist_ok=True)
         self.headers: Dict[str, str] = self.load_headers(json_data["headers"])
-        self.headers["cookie"] = self.load_cookie(json_data["cookie"])
+        self.headers["cookie"] = "_token=" + \
+            self.load_token(json_data["token"])
         self.url_list = self.load_url_list(json_data["course"])
         self.tasks: List[Task] = []
         for url in self.url_list:
@@ -136,10 +137,13 @@ class Main():
         dicts = {key.strip(): value.strip() for key, value in lines}
         return dicts
 
-    def load_cookie(self, file_path) -> str:
+    def load_token(self, file_path) -> str:
         with open(file_path, "r", encoding="UTF-8") as fp:
             lines = fp.readlines()
-        return lines[0].strip()
+        lines = [line.strip() for line in lines]
+        lines = [line for line in lines if len(line) > 0]
+        assert len(lines) > 0, "Empty token file\n"
+        return lines[0]
 
     def load_url_list(self, file_path) -> str:
         with open(file_path, "r", encoding="UTF-8") as fp:
